@@ -27,6 +27,8 @@ function getUser( $user_id )
 	$data   = $result->fetch_all( MYSQLI_ASSOC );
 
 	if ( count( $data ) == 1 ) {
+		$data[0]['username'] = getUserMetas( $data[0]['user_id'], 'reg-name' );
+
 		return $data[0];
 	}
 
@@ -78,13 +80,16 @@ function getSamples( $column = false, $show_labels = false )
 		$query    = "SELECT ds.symptom_id, s.name FROM disease_symptoms AS ds JOIN symptoms AS s ON s.id=ds.symptom_id WHERE disease_id = '{$row['id']}'";
 		$result_2 = mysqli_query( $con, $query );
 
-		$samples[ $row['id'] ]['label'] = $row['label'];
 		while ( $symptom = $result_2->fetch_assoc() ) {
 			if ( $show_labels ) {
 				$samples[ $row['id'] ]['data'][] = $symptom['name'];
 			} else {
-				$samples[ $row['id'] ]['data'][] = $symptom['symptom_id'];
+				$samples[ $row['id'] ]['data'][] = intval( $symptom['symptom_id'] );
 			}
+		}
+
+		if ( ! empty( $samples[ $row['id'] ]['data'] ) ) {
+			$samples[ $row['id'] ]['label'] = $row['label'];
 		}
 	}
 
@@ -99,7 +104,7 @@ function predict( $data )
 {
 	$classifier = new SVC(
 		Kernel::LINEAR, // $kernel
-		2.0,            // $costx
+		1.0,            // $costx
 		3,              // $degree
 		null,           // $gamma
 		0.0,            // $coef0
@@ -112,8 +117,24 @@ function predict( $data )
 	$samples = getSamples( 'data' );
 	$labels  = getSamples( 'label' );
 
+	$most = 0;
+	foreach ( $samples as $s ) {
+		if ( count( $s ) > $most ) {
+			$most = count( $s );
+		}
+	}
+	foreach ( $samples as $k => $s ) {
+		for ( $i = count( $s ); $i < $most; $i ++ ) {
+			$samples[ $k ][ $i ] = $s[ ( $i % count( $s ) ) ];
+		}
+	}
+
 	$classifier->train( $samples, $labels );
-	$predictions = $classifier->predictProbability( $data );
+	$predictions = $classifier->predictProbability( array_map( function ( $d ) {
+		return intval( $d );
+	}, $data ) );
+
+	/*
 	$has         = false;
 	$percent     = 1;
 
@@ -138,6 +159,7 @@ function predict( $data )
 			break;
 		}
 	}
+	*/
 
 	return $predictions;
 }

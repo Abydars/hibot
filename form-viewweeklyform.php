@@ -5,12 +5,14 @@ if ( ! isset( $_SESSION['user_id'] ) ) {
 	header( "location: page-login.php" );
 }
 
-$reports = $user_symptoms = [];
+$reports = $user_symptoms = $bar_chart_data = [];
 $user_id = $_SESSION['user_id'];
+$user    = getUser( $user_id );
 $result  = $con->query( "SELECT * FROM weekly_form WHERE user_id = '{$user_id}'" );
 
 while ( $row = mysqli_fetch_assoc( $result ) ) {
-	$result2 = $con->query( "SELECT s.* FROM user_symptoms AS us JOIN symptoms AS s ON us.symptom_id = s.id WHERE form_id = '{$row['id']}'" );
+	$result2  = $con->query( "SELECT s.* FROM user_symptoms AS us JOIN symptoms AS s ON us.symptom_id = s.id WHERE form_id = '{$row['id']}'" );
+	$entry_id = $row['id'];
 
 	while ( $row2 = mysqli_fetch_assoc( $result2 ) ) {
 		$row['symptoms'][] = $row2['name'];
@@ -20,8 +22,20 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
 	$row['predictions'] = predict( $user_symptoms );
 	arsort( $row['predictions'] );
 	$reports[ $row['submitted_date'] ] = $row;
-};
 
+	$bar_chart_data[ $entry_id ]['labels']     = array_keys( $row['predictions'] );
+	$bar_chart_data[ $entry_id ]['datasets'][] = [
+		"data"                 => array_map( function ( $a ) {
+			return number_format( $a * 100, 2 );
+		}, array_values( $row['predictions'] ) ),
+		"fillColor"            => "rgba(220,220,220,0.2)",
+		"strokeColor"          => "rgba(220,220,220,1)",
+		"pointColor"           => "rgba(220,220,220,1)",
+		"pointStrokeColor"     => "#fff",
+		"pointHighlightFill"   => "#fff",
+		"pointHighlightStroke" => "rgba(220,220,220,1)",
+	];
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -110,8 +124,8 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
                                         src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg"
                                         alt="User Image">
         <div>
-            <p class="app-sidebar__user-name">Kazim Kirmani</p>
-            <p class="app-sidebar__user-designation">Sofware Enginner</p>
+            <p class="app-sidebar__user-name"><?= ucwords( $user['username'] ) ?></p>
+            <p class="app-sidebar__user-designation">Software Engineer</p>
         </div>
     </div>
     <ul class="app-menu">
@@ -199,8 +213,14 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
                     <br/>
                     <h4>Predictions</h4>
                     <br/>
+                    <div class="tile">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <canvas class="embed-responsive-item prediction-bar-chart"
+                                    data-id="<?= $report['id'] ?>"></canvas>
+                        </div>
+                    </div>
 					<?php foreach ( $report['predictions'] as $disease => $prediction ) { ?>
-                        <div class="row">
+                        <div class="row" style="display: none;">
                             <div class="col-md-9">
                                 <h5><?= $disease ?></h5>
                             </div>
@@ -221,6 +241,26 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
 <script src="js/main.js"></script>
 <!-- The javascript plugin to display page loading on top-->
 <script src="js/plugins/pace.min.js"></script>
+<script type="text/javascript" src="js/plugins/chart.js"></script>
+<script type="text/javascript">
+    jQuery(function ($) {
+        var data = <?php echo json_encode( $bar_chart_data ); ?>;
+
+        $('.btn-report').on('click', function (event) {
+            var content_id = $(this).data('content-id');
+
+            $('.report-content').slideUp();
+            $(content_id).slideDown(function () {
+                $(".prediction-bar-chart").each(function () {
+                    var id = $(this).data('id');
+                    var chart_data = data[id];
+                    var ctxb = $(this).get(0).getContext("2d");
+                    var barChart = new Chart(ctxb).Bar(chart_data);
+                });
+            });
+        });
+    });
+</script>
 <!-- Page specific javascripts-->
 <!-- Google analytics script-->
 <script type="text/javascript">
@@ -239,17 +279,6 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
         ga('create', 'UA-72504830-1', 'auto');
         ga('send', 'pageview');
     }
-</script>
-
-<script type="text/javascript">
-    jQuery(function ($) {
-        $('.btn-report').on('click', function (event) {
-            var content_id = $(this).data('content-id');
-
-            $('.report-content').slideUp();
-            $(content_id).slideDown();
-        });
-    });
 </script>
 </body>
 </html>

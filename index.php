@@ -7,6 +7,7 @@ if ( ! isset( $_SESSION['user_id'] ) ) {
 
 $symptoms = [];
 $user_id  = $_SESSION['user_id'];
+$user     = getUser( $user_id );
 $result   = $con->query( "SELECT * FROM weekly_form WHERE user_id = '{$user_id}'" );
 
 while ( $row = mysqli_fetch_assoc( $result ) ) {
@@ -17,7 +18,7 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
 	}
 }
 
-$pie_data    = [];
+$pie_data    = $bar_chart_data = $line_chart_data = [];
 $predictions = predict( $symptoms );
 arsort( $predictions );
 
@@ -25,10 +26,52 @@ $i      = 0;
 $colors = [ "orange", "black", "red", "green", "pink", "purple", "grey" ];
 
 foreach ( $predictions as $disease => $prediction ) {
+	$j          = ( $i + 1 ) > ( count( $colors ) - 1 ) ? ( $i + 1 ) % ( count( $colors ) - 1 ) : ( $i + 1 );
 	$pie_data[] = [
 		"value" => $prediction,
-		"color" => $colors[ $i ++ ],
+		"color" => $colors[ $j ],
 		"label" => $disease
+	];
+	$i ++;
+}
+
+$bar_chart_data['labels']     = array_keys( $predictions );
+$bar_chart_data['datasets'][] = [
+	"data"                 => array_map( function ( $a ) {
+		return number_format( $a * 100, 2 );
+	}, array_values( $predictions ) ),
+	"fillColor"            => "rgba(220,220,220,0.2)",
+	"strokeColor"          => "rgba(220,220,220,1)",
+	"pointColor"           => "rgba(220,220,220,1)",
+	"pointStrokeColor"     => "#fff",
+	"pointHighlightFill"   => "#fff",
+	"pointHighlightStroke" => "rgba(220,220,220,1)",
+];
+
+$line_chart_data['labels'] = array_keys( $predictions );
+$result                    = $con->query( "SELECT * FROM weekly_form WHERE user_id = '{$user_id}'" );
+$user_symptoms             = [];
+
+while ( $row = mysqli_fetch_assoc( $result ) ) {
+	$result2  = $con->query( "SELECT s.* FROM user_symptoms AS us JOIN symptoms AS s ON us.symptom_id = s.id WHERE form_id = '{$row['id']}'" );
+	$entry_id = $row['id'];
+
+	while ( $row2 = mysqli_fetch_assoc( $result2 ) ) {
+		$user_symptoms[] = $row2['id'];
+	}
+	$row['predictions'] = predict( $user_symptoms );
+	arsort( $row['predictions'] );
+
+	$line_chart_data['datasets'][] = [
+		"data"                 => array_map( function ( $a ) {
+			return number_format( $a * 100, 2 );
+		}, array_values( $row['predictions'] ) ),
+		"fillColor"            => "rgba(220,220,220,0.2)",
+		"strokeColor"          => "rgba(220,220,220,1)",
+		"pointColor"           => "rgba(220,220,220,1)",
+		"pointStrokeColor"     => "#fff",
+		"pointHighlightFill"   => "#fff",
+		"pointHighlightStroke" => "rgba(220,220,220,1)",
 	];
 }
 
@@ -119,8 +162,8 @@ foreach ( $predictions as $disease => $prediction ) {
         <div>
 
 
-            <p class="app-sidebar__user-name"></p>
-            <p class="app-sidebar__user-designation">Sofware Enginner</p>
+            <p class="app-sidebar__user-name"><?= ucwords( $user['username'] ) ?></p>
+            <p class="app-sidebar__user-designation">Software Engineer</p>
 
         </div>
     </div>
@@ -219,6 +262,14 @@ foreach ( $predictions as $disease => $prediction ) {
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="tile">
+                <h3 class="tile-title">Overall Predictions</h3>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <canvas class="embed-responsive-item" id="prediction-bar-chart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="tile">
         <h3 class="tile-title">Chat</h3>
@@ -286,35 +337,15 @@ foreach ( $predictions as $disease => $prediction ) {
 <!-- Page specific javascripts-->
 <script type="text/javascript" src="js/plugins/chart.js"></script>
 <script type="text/javascript">
-    var data = {
-        labels: ["January", "February", "March", "April", "May"],
-        datasets: [
-            {
-                label: "My First dataset",
-                fillColor: "rgba(220,220,220,0.2)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(220,220,220,1)",
-                data: [65, 59, 80, 81, 56]
-            },
-            {
-                label: "My Second dataset",
-                fillColor: "rgba(151,187,205,0.2)",
-                strokeColor: "rgba(151,187,205,1)",
-                pointColor: "rgba(151,187,205,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(151,187,205,1)",
-                data: [28, 48, 40, 19, 86]
-            }
-        ]
-    };
     var pdata = <?= json_encode( $pie_data ); ?>;
+    var chart_data = <?= json_encode( $bar_chart_data ); ?>;
+    var line_data = <?= json_encode( $line_chart_data ); ?>;
 
     var ctxl = $("#lineChartDemo").get(0).getContext("2d");
-    var lineChart = new Chart(ctxl).Line(data);
+    var lineChart = new Chart(ctxl).Line(line_data);
+
+    var ctxb = $("#prediction-bar-chart").get(0).getContext("2d");
+    var barChart = new Chart(ctxb).Bar(chart_data);
 
     var ctxp = $("#pieChartDemo").get(0).getContext("2d");
     var pieChart = new Chart(ctxp).Pie(pdata);

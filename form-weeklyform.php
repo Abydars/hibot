@@ -20,29 +20,39 @@ if ( isset( $_POST['is_submitted'] ) ) {
 		$medicines = "";
 	}
 
-	$query   = "INSERT INTO weekly_form(feeling, is_weird_health, medicines, user_id, submitted_date) VALUES('{$feeling}', '{$is_weird_health}', '{$medicines}', '{$user_id}', '{$submitted_date}');";
-	$created = $con->query( $query );
-	$form_id = mysqli_insert_id( $con );
+	$start_date = date( "Y-m-d" );
+	$end_date   = date( "Y-m-d", strtotime( "+7 days" ) );
+	$query      = "SELECT * FROM weekly_form WHERE user_id = '{$user_id}' AND submitted_date >= '{$start_date}' AND submitted_date <= '{$end_date}'";
+	$result     = $con->query( $query );
 
-	$values = [];
-	foreach ( $_POST['symptoms'] as $symptom ) {
-		$values[] = "({$form_id}, {$symptom})";
-	}
-	$values  = implode( ",", $values );
-	$query   = "INSERT INTO user_symptoms (form_id, symptom_id) VALUES {$values}";
-	$created &= $con->query( $query );
+	if ( $result->num_rows <= 0 ) {
 
-	if ( $created ) {
-		$success = "Thank you for submitting your report!";
+		$query   = "INSERT INTO weekly_form(feeling, is_weird_health, medicines, user_id, submitted_date) VALUES('{$feeling}', '{$is_weird_health}', '{$medicines}', '{$user_id}', '{$submitted_date}');";
+		$created = $con->query( $query );
+		$form_id = mysqli_insert_id( $con );
 
-		if ( ! empty( $user['username'] ) ) {
-			notification( $user['username'], 'Thank you!', 'Thanks for submitting your weekly survey.' );
+		$values = [];
+		foreach ( $_POST['symptoms'] as $symptom ) {
+			$values[] = "({$form_id}, {$symptom})";
 		}
+		$values  = implode( ",", $values );
+		$query   = "INSERT INTO user_symptoms (form_id, symptom_id) VALUES {$values}";
+		$created &= $con->query( $query );
 
-		$url = "form-viewweeklyform.php";
-		header( "location: {$url}" );
+		if ( $created ) {
+			$success = "Thank you for submitting your report!";
+
+			if ( ! empty( $user['username'] ) ) {
+				notification( $user['username'], 'Thank you!', 'Thanks for submitting your weekly survey.' );
+			}
+
+			$url = "form-viewweeklyform.php";
+			header( "location: {$url}" );
+		} else {
+			$error = "Failed to submit your report";
+		}
 	} else {
-		$error = "Failed to submit your report";
+		$error = "You've already filled this form in this week";
 	}
 }
 $symptoms = getSymptoms();
@@ -134,8 +144,8 @@ $symptoms = getSymptoms();
                                         src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg"
                                         alt="User Image">
         <div>
-            <p class="app-sidebar__user-name">Kazim Kirmani</p>
-            <p class="app-sidebar__user-designation">Sofware Enginner</p>
+            <p class="app-sidebar__user-name"><?= ucwords( $user['username'] ) ?></p>
+            <p class="app-sidebar__user-designation">Software Engineer</p>
         </div>
     </div>
     <ul class="app-menu">
@@ -206,12 +216,14 @@ $symptoms = getSymptoms();
                             <div class="col-md-8">
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input class="form-check-input" value="1" type="radio" name="is_weird_health">Yes
+                                        <input class="form-check-input" value="1" type="radio" name="is_weird_health"
+                                               required>Yes
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input class="form-check-input" value="0" type="radio" name="is_weird_health">No
+                                        <input class="form-check-input" value="0" type="radio" name="is_weird_health"
+                                               required>No
                                     </label>
                                 </div>
                             </div>
@@ -222,7 +234,8 @@ $symptoms = getSymptoms();
                                 <div class="animated-checkbox">
 									<?php foreach ( $symptoms as $symptom ) { ?>
                                         <label>
-                                            <input type="checkbox" name="symptoms[]" value="<?= $symptom['id'] ?>"><span
+                                            <input type="checkbox" name="symptoms[]" value="<?= $symptom['id'] ?>"
+                                                   required><span
                                                     class="label-text"><?= $symptom['name'] ?></span> &nbsp;&nbsp;
                                         </label>
 									<?php } ?>
@@ -234,7 +247,8 @@ $symptoms = getSymptoms();
                             <div class="col-md-8">
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input class="form-check-input" value="1" type="radio" name="has_medicines">Yes
+                                        <input class="form-check-input" value="1" type="radio" name="has_medicines"
+                                               required>Yes
                                     </label>
                                 </div>
                                 <input class="form-control col-md-4" name="medicines[]" type="text"
@@ -245,7 +259,8 @@ $symptoms = getSymptoms();
                                        placeholder="Enter medicine name">
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input class="form-check-input" value="0" type="radio" name="has_medicines">No
+                                        <input class="form-check-input" value="0" type="radio" name="has_medicines"
+                                               required>No
                                     </label>
                                 </div>
                             </div>
@@ -262,7 +277,7 @@ $symptoms = getSymptoms();
                             <div class="col-md-8 col-md-offset-3">
                                 <div class="form-check">
                                     <label class="form-check-label">
-                                        <input class="form-check-input" type="checkbox">I accept the terms and
+                                        <input class="form-check-input" type="checkbox" required>I accept the terms and
                                         conditions
                                     </label>
                                 </div>
