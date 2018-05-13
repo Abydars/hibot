@@ -18,6 +18,14 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
 		$row['symptoms'][] = $row2['name'];
 		$user_symptoms[]   = $row2['id'];
 	}
+
+	$row['filename'] = false;
+
+	$result3 = $con->query( "SELECT filename FROM user_uploads WHERE form_id = '{$entry_id}';" );
+	while ( $row3 = mysqli_fetch_assoc( $result3 ) ) {
+		$row['filename'] = $row3['filename'];
+	}
+
 	$row['symptoms']    = implode( ', ', $row['symptoms'] );
 	$row['predictions'] = predict( $user_symptoms );
 	arsort( $row['predictions'] );
@@ -112,7 +120,7 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
             <ul class="dropdown-menu settings-menu dropdown-menu-right">
                 <li><a class="dropdown-item" href="page-user.html"><i class="fa fa-cog fa-lg"></i> Settings</a></li>
                 <li><a class="dropdown-item" href="page-user.html"><i class="fa fa-user fa-lg"></i> Profile</a></li>
-                <li><a class="dropdown-item" href="page-login.html"><i class="fa fa-sign-out fa-lg"></i> Logout</a></li>
+                <li><a class="dropdown-item" href="logout.php"><i class="fa fa-sign-out fa-lg"></i> Logout</a></li>
             </ul>
         </li>
     </ul>
@@ -124,8 +132,7 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
                                         src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg"
                                         alt="User Image">
         <div>
-            <p class="app-sidebar__user-name"><?= ucwords( $user['username'] ) ?></p>
-            <p class="app-sidebar__user-designation">Software Engineer</p>
+            <p class="app-sidebar__user-name"><?= ucwords( $user['name'] ) ?></p>
         </div>
     </div>
     <ul class="app-menu">
@@ -211,6 +218,11 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
                         <div><strong><?= $labels[ $key ] ?></strong>: <span><?= $val ?></span></div>
 					<?php } ?>
                     <br/>
+					<?php if ( $report['filename'] ) { ?>
+                        <div><a target="_blank" href="<?= $report['filename'] ?>" class="btn btn-primary">View
+                                Attachment</a></div>
+					<?php } ?>
+                    <br/>
                     <h4>Predictions</h4>
                     <br/>
                     <div class="tile">
@@ -220,11 +232,11 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
                         </div>
                     </div>
 					<?php foreach ( $report['predictions'] as $disease => $prediction ) { ?>
-                        <div class="row" style="display: none;">
-                            <div class="col-md-9">
+                        <div class="clearfix" style="display: block;">
+                            <div class="pull-left">
                                 <h5><?= $disease ?></h5>
                             </div>
-                            <div class="col-md-3 text-right">
+                            <div class="pull-right">
                                 <h5><?= number_format( 100 * $prediction, 2 ) ?>%</h5>
                             </div>
                         </div>
@@ -251,7 +263,7 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
 
             $('.report-content').slideUp();
             $(content_id).slideDown(function () {
-                $(".prediction-bar-chart").each(function () {
+                $(content_id).find(".prediction-bar-chart").each(function () {
                     var id = $(this).data('id');
                     var chart_data = data[id];
                     var ctxb = $(this).get(0).getContext("2d");

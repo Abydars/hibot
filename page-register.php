@@ -14,12 +14,12 @@ if ( isset( $_POST['email'] ) && isset( $_POST['password'] ) ) {
 	if ( $user_exists ) {
 		$error = "User already exists";
 	} else {
-		$created = $con->query( "INSERT INTO users(username, password) VALUES('{$_POST['email']}', '{$_POST['password']}');" );
+		$created = $con->query( "INSERT INTO users(name, phone, username, password) VALUES('{$_POST['name']}', '{$_POST['phone']}', '{$_POST['email']}', '{$_POST['password']}');" );
 		if ( ! $created ) {
 			$error = "Registration failed";
 		} else {
 			$user_id             = mysqli_insert_id( $con );
-			$_SESSION['user_id'] = $user_id;
+			//$_SESSION['user_id'] = $user_id;
 
 			$url = "index.php";
 			header( "location: {$url}" );
@@ -55,6 +55,14 @@ if ( isset( $_POST['email'] ) && isset( $_POST['password'] ) ) {
 			<?php if ( $error ) { ?>
                 <div class="alert alert-danger"><?php echo $error; ?></div><?php } ?>
             <div class="form-group">
+                <label class="control-label">FULL NAME</label>
+                <input name="name" class="form-control" type="text" placeholder="Your name" autofocus>
+            </div>
+            <div class="form-group">
+                <label class="control-label">PHONE</label>
+                <input name="phone" class="form-control" type="text" placeholder="Phone" autofocus>
+            </div>
+            <div class="form-group">
                 <label class="control-label">USERNAME</label>
                 <input name="email" class="form-control" type="text" placeholder="Email" autofocus>
             </div>
@@ -62,12 +70,11 @@ if ( isset( $_POST['email'] ) && isset( $_POST['password'] ) ) {
                 <label class="control-label">PASSWORD</label>
                 <input name="password" class="form-control" type="password" placeholder="Password">
             </div>
-
             <div class="form-group btn-container">
                 <button class="btn btn-primary btn-block"><i class="fa fa-sign-in fa-lg fa-fw"></i>REGISTER</button>
             </div>
         </form>
-
+        <div class="clearfix"></div>
     </div>
 
 

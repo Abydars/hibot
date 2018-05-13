@@ -27,7 +27,7 @@ function getUser( $user_id )
 	$data   = $result->fetch_all( MYSQLI_ASSOC );
 
 	if ( count( $data ) == 1 ) {
-		$data[0]['username'] = getUserMetas( $data[0]['user_id'], 'reg-name' );
+		//$data[0]['username'] = getUserMetas( $data[0]['user_id'], 'reg-name' );
 
 		return $data[0];
 	}
@@ -117,6 +117,7 @@ function predict( $data )
 	$samples = getSamples( 'data' );
 	$labels  = getSamples( 'label' );
 
+	/*
 	$most = 0;
 	foreach ( $samples as $s ) {
 		if ( count( $s ) > $most ) {
@@ -128,6 +129,7 @@ function predict( $data )
 			$samples[ $k ][ $i ] = $s[ ( $i % count( $s ) ) ];
 		}
 	}
+	*/
 
 	$classifier->train( $samples, $labels );
 	$predictions = $classifier->predictProbability( array_map( function ( $d ) {

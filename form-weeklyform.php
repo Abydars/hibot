@@ -15,21 +15,42 @@ if ( isset( $_POST['is_submitted'] ) ) {
 	$medicines       = implode( ',', $_POST['medicines'] );
 	$has_medicines   = $_POST['has_medicines'];
 	$submitted_date  = date( "Y-m-d" );
+	$filename        = false;
 
 	if ( $has_medicines == "0" ) {
 		$medicines = "";
 	}
 
-	$start_date = date( "Y-m-d" );
-	$end_date   = date( "Y-m-d", strtotime( "+7 days" ) );
-	$query      = "SELECT * FROM weekly_form WHERE user_id = '{$user_id}' AND submitted_date >= '{$start_date}' AND submitted_date <= '{$end_date}'";
-	$result     = $con->query( $query );
+	if ( ! empty( $_FILES['image'] ) ) {
+		$target_dir    = "uploads/";
+		$target_file   = $target_dir . basename( $_FILES["image"]["name"] );
+		$imageFileType = strtolower( pathinfo( $target_file, PATHINFO_EXTENSION ) );
+		$check         = getimagesize( $_FILES["image"]["tmp_name"] );
 
-	if ( $result->num_rows <= 0 ) {
+		//if ( $check == false || ( $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) ) {
+		//$error = "Invalid image type";
+		//} else
+		if ( move_uploaded_file( $_FILES["image"]["tmp_name"], $target_file ) ) {
+			$filename = $target_file;
+		}
+	}
+
+	if ( ! $error ) {
+		$start_date = date( "Y-m-d" );
+		$end_date   = date( "Y-m-d", strtotime( "+7 days" ) );
+		$query      = "SELECT * FROM weekly_form WHERE user_id = '{$user_id}' AND submitted_date >= '{$start_date}' AND submitted_date <= '{$end_date}'";
+		$result     = $con->query( $query );
+
+		//if ( $result->num_rows <= 0 ) {
 
 		$query   = "INSERT INTO weekly_form(feeling, is_weird_health, medicines, user_id, submitted_date) VALUES('{$feeling}', '{$is_weird_health}', '{$medicines}', '{$user_id}', '{$submitted_date}');";
 		$created = $con->query( $query );
 		$form_id = mysqli_insert_id( $con );
+
+		if ( $filename ) {
+			$query = "INSERT INTO user_uploads(filename, form_id) VALUES('{$filename}', '{$form_id}')";
+			$con->query( $query );
+		}
 
 		$values = [];
 		foreach ( $_POST['symptoms'] as $symptom ) {
@@ -46,14 +67,20 @@ if ( isset( $_POST['is_submitted'] ) ) {
 				notification( $user['username'], 'Thank you!', 'Thanks for submitting your weekly survey.' );
 			}
 
+			$target_dir    = "uploads/";
+			$target_file   = $target_dir . basename( $_FILES["fileToUpload"]["name"] );
+			$uploadOk      = 1;
+			$imageFileType = strtolower( pathinfo( $target_file, PATHINFO_EXTENSION ) );
+
 			$url = "form-viewweeklyform.php";
 			header( "location: {$url}" );
 		} else {
 			$error = "Failed to submit your report";
 		}
-	} else {
-		$error = "You've already filled this form in this week";
 	}
+	//} else {
+	//$error = "You've already filled this form in this week";
+	//}
 }
 $symptoms = getSymptoms();
 ?>
@@ -132,7 +159,7 @@ $symptoms = getSymptoms();
             <ul class="dropdown-menu settings-menu dropdown-menu-right">
                 <li><a class="dropdown-item" href="page-user.html"><i class="fa fa-cog fa-lg"></i> Settings</a></li>
                 <li><a class="dropdown-item" href="page-user.html"><i class="fa fa-user fa-lg"></i> Profile</a></li>
-                <li><a class="dropdown-item" href="page-login.html"><i class="fa fa-sign-out fa-lg"></i> Logout</a></li>
+                <li><a class="dropdown-item" href="logout.php"><i class="fa fa-sign-out fa-lg"></i> Logout</a></li>
             </ul>
         </li>
     </ul>
@@ -144,8 +171,7 @@ $symptoms = getSymptoms();
                                         src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg"
                                         alt="User Image">
         <div>
-            <p class="app-sidebar__user-name"><?= ucwords( $user['username'] ) ?></p>
-            <p class="app-sidebar__user-designation">Software Engineer</p>
+            <p class="app-sidebar__user-name"><?= ucwords( $user['name'] ) ?></p>
         </div>
     </div>
     <ul class="app-menu">
@@ -202,7 +228,7 @@ $symptoms = getSymptoms();
                     <div class="alert alert-danger"><?php echo $error; ?></div><?php } ?>
 				<?php if ( $success ) { ?>
                     <div class="alert alert-success"><?php echo $success; ?></div><?php } ?>
-                <form class="form-horizontal" method="POST">
+                <form class="form-horizontal" method="POST" enctype="multipart/form-data">
                     <div class="tile-body">
                         <div class="form-group row">
                             <label class="control-label col-md-3">Hey Dude How Are You Feeling ?</label>
@@ -234,8 +260,7 @@ $symptoms = getSymptoms();
                                 <div class="animated-checkbox">
 									<?php foreach ( $symptoms as $symptom ) { ?>
                                         <label>
-                                            <input type="checkbox" name="symptoms[]" value="<?= $symptom['id'] ?>"
-                                                   required><span
+                                            <input type="checkbox" name="symptoms[]" value="<?= $symptom['id'] ?>"><span
                                                     class="label-text"><?= $symptom['name'] ?></span> &nbsp;&nbsp;
                                         </label>
 									<?php } ?>
@@ -270,7 +295,7 @@ $symptoms = getSymptoms();
                         <div class="form-group row">
                             <label class="control-label col-md-3">Upload Image</label>
                             <div class="col-md-8">
-                                <input class="form-control" type="file">
+                                <input class="form-control" name="image" type="file">
                             </div>
                         </div>
                         <div class="form-group row">
