@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2018 at 05:01 PM
+-- Generation Time: May 14, 2018 at 02:54 AM
 -- Server version: 10.1.21-MariaDB
 -- PHP Version: 7.1.1
 
@@ -191,18 +191,23 @@ INSERT INTO `symptoms` (`id`, `name`) VALUES
 CREATE TABLE `users` (
   `user_id` int(3) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL
+  `password` varchar(50) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`) VALUES
-(1, 'admin', 'admin'),
-(2, 'admin1', 'admin1'),
-(3, 'admin2', 'admin2'),
-(4, 'kazim', '123');
+INSERT INTO `users` (`user_id`, `username`, `password`, `name`, `phone`) VALUES
+(1, 'admin', 'admin', 'Kazim', NULL),
+(2, 'admin1', 'admin1', NULL, NULL),
+(3, 'admin2', 'admin2', NULL, NULL),
+(4, 'kazim', '123', NULL, NULL),
+(5, 'mub', '123', NULL, NULL),
+(6, 'tester', 'tester', 'Test', '49280394'),
+(7, 'tester123', 'tester', 'tester', '429038');
 
 -- --------------------------------------------------------
 
@@ -242,7 +247,27 @@ INSERT INTO `user_meta` (`id`, `meta_key`, `meta_value`, `user_id`) VALUES
 (18, 'sugar', '{\"diabetes\":\"\",\"list\":\"\",\"injection\":\"\",\"type\":\"\",\"complications\":\"\",\"felt\":[\"stressed\"],\"goals\":\"\",\"doctordetails\":\"\"}', 1),
 (19, 'reg-healthy', '5', 1),
 (20, 'reg-gender', 'male', 1),
-(21, 'reg-disease', 'yes', 1);
+(21, 'reg-disease', 'yes', 1),
+(22, 'reg-name', '', 7),
+(23, 'reg-dob', '', 7),
+(24, 'reg-address', '  ', 7),
+(25, 'reg-city', '', 7),
+(26, 'reg-country', '', 7),
+(27, 'reg-phone', '', 7),
+(28, 'reg-age', '', 7),
+(29, 'reg-bloodgroup', '', 7),
+(30, 'physicians', '[\"\",\"\",\"\"]', 7),
+(31, 'reg-injuryreason', '', 7),
+(32, 'diseases', '[\"\",\"\",\"\",\"\"]', 7),
+(33, 'medicines', '[\"\",\"\",\"\"]', 7),
+(34, 'reg-medicinereason', '', 7),
+(35, 'chest', '{\"discomfort\":\"\",\"experience\":\"\",\"activities\":\"\",\"relieve\":\"\"}', 7),
+(36, 'heart', '{\"notice\":\"\",\"bring1\":\"\"}', 7),
+(37, 'kidney', '{\"kidneydieases\":\"\",\"kidneydetails\":\"\"}', 7),
+(38, 'smoker', '{\"smoked\":\"\",\"started\":\"\",\"stopped\":\"\",\"length\":\"\",\"use\":\"\"}', 7),
+(39, 'sugar', '{\"diabetes\":\"\",\"list\":\"\",\"injection\":\"\",\"type\":\"\",\"complications\":\"\",\"goals\":\"\",\"doctordetails\":\"\"}', 7),
+(40, 'image', 'field.jpg', 7),
+(41, 'filename', 'uploads/field.jpg', 7);
 
 -- --------------------------------------------------------
 
@@ -262,7 +287,43 @@ CREATE TABLE `user_symptoms` (
 
 INSERT INTO `user_symptoms` (`id`, `form_id`, `symptom_id`) VALUES
 (5, 3, 5),
-(6, 4, 1);
+(6, 4, 1),
+(8, 6, 3),
+(9, 6, 8),
+(10, 6, 9),
+(11, 7, 1),
+(12, 7, 10),
+(13, 7, 14),
+(14, 8, 1),
+(15, 8, 2),
+(16, 9, 1),
+(17, 9, 2),
+(18, 9, 8),
+(19, 9, 13),
+(20, 10, 1),
+(21, 10, 2),
+(22, 11, 1),
+(23, 12, 2),
+(24, 12, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_uploads`
+--
+
+CREATE TABLE `user_uploads` (
+  `id` int(11) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `form_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `user_uploads`
+--
+
+INSERT INTO `user_uploads` (`id`, `filename`, `form_id`) VALUES
+(1, 'uploads/Fall-wallpaper.jpg', 11);
 
 -- --------------------------------------------------------
 
@@ -286,7 +347,14 @@ CREATE TABLE `weekly_form` (
 
 INSERT INTO `weekly_form` (`id`, `feeling`, `is_weird_health`, `medicines`, `image`, `user_id`, `submitted_date`) VALUES
 (3, 'Test', 1, 'Test,test,test', '', 1, '2018-04-21'),
-(4, 'Test', 1, 'test,,', '', 1, '2018-04-21');
+(4, 'Test', 1, 'test,,', '', 1, '2018-04-21'),
+(6, 'kazim', 1, 'ad,ad,ad', '', 1, '2018-05-06'),
+(7, 'mubashir', 1, 'lll,ll,ll', '', 5, '2018-05-06'),
+(8, 'Test', 1, ',,', '', 1, '2018-05-13'),
+(9, 'Test', 1, ',,', '', 1, '2018-05-13'),
+(10, 'Test', 1, 'test,,', '', 1, '2018-05-13'),
+(11, 'test', 1, ',,', '', 1, '2018-05-13'),
+(12, 'test', 1, 'test,,', '', 7, '2018-05-13');
 
 --
 -- Indexes for dumped tables
@@ -335,6 +403,12 @@ ALTER TABLE `user_symptoms`
   ADD KEY `symptom_id` (`symptom_id`);
 
 --
+-- Indexes for table `user_uploads`
+--
+ALTER TABLE `user_uploads`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `weekly_form`
 --
 ALTER TABLE `weekly_form`
@@ -363,22 +437,27 @@ ALTER TABLE `symptoms`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `user_meta`
 --
 ALTER TABLE `user_meta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 --
 -- AUTO_INCREMENT for table `user_symptoms`
 --
 ALTER TABLE `user_symptoms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+--
+-- AUTO_INCREMENT for table `user_uploads`
+--
+ALTER TABLE `user_uploads`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `weekly_form`
 --
 ALTER TABLE `weekly_form`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- Constraints for dumped tables
 --
