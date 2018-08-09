@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/composer/vendor/autoload.php';
 
 use Phpml\Classification\SVC;
@@ -12,23 +11,25 @@ if ( isset( $_GET['check'] ) ) {
 	var_dump( getSamples( false, true ) );
 	exit;
 }
-
+//tell is json or not [ = array { ob	ject json}
 function isJson( $str )
 {
 	return strrpos( $str, '[' ) === 0 || strrpos( $str, '{' ) === 0;
 }
 
-function getUser( $user_id )
+function getUser( $user_id = false )
 {
 	global $con;
 
-	$query  = "SELECT * FROM users WHERE user_id = '{$user_id}';";
+	$query  = "SELECT * FROM users;";
+	if($user_id)
+		$query  = "SELECT * FROM users WHERE user_id = '{$user_id}';";
+
 	$result = $con->query( $query );
-	$data   = $result->fetch_all( MYSQLI_ASSOC );
+	$data   = $result->fetch_all( MYSQLI_ASSOC ); // return key value pair
 
 	if ( count( $data ) == 1 ) {
 		//$data[0]['username'] = getUserMetas( $data[0]['user_id'], 'reg-name' );
-
 		return $data[0];
 	}
 
@@ -53,7 +54,7 @@ function getUserMetas( $user_id, $key = false )
 
 		while ( $row = $result->fetch_assoc() ) {
 			$value                       = $row['meta_value'];
-			$results[ $row['meta_key'] ] = isJson( $value ) ? json_decode( $value, true ) : $value;
+			$results[ $row['meta_key'] ] = isJson( $value ) ? json_decode( $value, true ) : $value; // parse php array
 		}
 
 		return $results;
@@ -88,8 +89,8 @@ function getSamples( $column = false, $show_labels = false )
 			}
 		}
 
-		if ( ! empty( $samples[ $row['id'] ]['data'] ) ) {
-			$samples[ $row['id'] ]['label'] = $row['label'];
+		if ( ! empty( $samples[ $row['id'] ]['data'] ) ) { //if symptom exist
+			$samples[ $row['id'] ]['label'] = $row['label']; //sysmtom exist then label set in sample varibale
 		}
 	}
 
@@ -102,6 +103,8 @@ function getSamples( $column = false, $show_labels = false )
 
 function predict( $data )
 {
+	// return array();
+
 	$classifier = new SVC(
 		Kernel::LINEAR, // $kernel
 		1.0,            // $costx
@@ -114,8 +117,13 @@ function predict( $data )
 		true            // $probabilityEstimates, set to true
 	);
 
-	$samples = getSamples( 'data' );
-	$labels  = getSamples( 'label' );
+	$samples = getSamples( 'data' ); //samples = symptoms
+	$labels  = getSamples( 'label' ); // labels = disease
+
+	for($i = 0; $i < 6; $i ++) {
+		$samples = array_merge($samples, $samples);
+		$labels = array_merge($labels, $labels);
+	}
 
 	/*
 	$most = 0;
@@ -166,11 +174,25 @@ function predict( $data )
 	return $predictions;
 }
 
-function getSymptoms()
+function getSymptoms($disease_id = false)
 {
 	global $con;
 
 	$query = "SELECT * FROM symptoms";
+	if($disease_id) {
+		$q = "SELECT symptom_id FROM disease_symptoms WHERE disease_id = '{$disease_id}'";
+		$result = mysqli_query($con, $q);
+		$ids = [];
+		while ( $row = $result->fetch_assoc() ) {
+			$ids[] = $row['symptom_id'];
+		}
+		if($ids) {
+			$ids = implode(", ", $ids);
+			$query = "SELECT * FROM symptoms WHERE id IN ({$ids})"; // bring all symptom where id exists in ids
+		} else {
+			return [];
+		}
+	}
 
 	$symptoms = [];
 	$result   = mysqli_query( $con, $query );
@@ -212,4 +234,42 @@ function notification( $to, $subject, $text )
 	} catch ( Exception $e ) {
 		return $mail->ErrorInfo;
 	}
+}
+
+function getDiseases( $id = false )
+{
+	global $con;
+
+	$query  = "SELECT * FROM diseases;";
+	if($id)
+		$query  = "SELECT * FROM diseases WHERE id = '{$id}';";
+
+	$result = $con->query( $query );
+	$data   = $result->fetch_all( MYSQLI_ASSOC );
+
+	if ( count( $data ) == 1 ) {
+		return $data[0];
+	}
+
+	return $data;
+}
+
+function deleteDiseaseSymptomRelation($disease_id, $symptom_id) {
+	global $con;
+
+	if(!$symptom_id)
+		$query = "DELETE FROM disease_symptoms WHERE disease_id = '{$disease_id}'";
+	else if(!$disease_id)
+		$query = "DELETE FROM disease_symptoms WHERE symptom_id = '{$symptom_id}'";
+	else
+		$query  = "DELETE FROM disease_symptoms WHERE disease_id = '{$disease_id}' AND symptom_id = '{$symptom_id}';";
+
+	return $con->query( $query );
+}
+
+function createDiseaseSymptomRelation($disease_id, $symptom_id) {
+	global $con;
+
+	$query  = "INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES('{$disease_id}', '{$symptom_id}');";
+	return $con->query( $query );
 }

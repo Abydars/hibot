@@ -106,7 +106,6 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
     <!-- Main CSS-->
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!-- Font-icon css-->
-
     <link rel="stylesheet" type="text/css"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>ED SYSTEM</title>
@@ -117,7 +116,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
 </section>
 <section class="login-content">
     <div class="logo">
-        <h1>ED SYSTEM</h1>
+        <h1>EXPERT DISEASE SYSTEM</h1>
     </div>
     <div class="col-md-6">
         <div class="tile">
@@ -316,7 +315,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                         <div class="form-group">
                             <label class="control-label">When did you first experience chest discomfort?</label>
                             <textarea class="form-control" name="chest[experience]" rows="4"
-                                      placeholder="Detail here"><?= print_val( 'experience',0 , 'chest' ) ?></textarea>
+                                      placeholder="Detail here"><?= print_val( 'chest[experience]' ) ?></textarea>
                         </div>
 
                         <div class="form-group">
@@ -463,7 +462,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                         <div class="form-group">
                             <label class="control-label">What activities bring on this Discomfort?</label>
                             <textarea class="form-control" name="chest[activities]" rows="4"
-                                      placeholder="Detail here"><?= print_val( 'activities', 0, 'chest'  ) ?></textarea>
+                                      placeholder="Detail here"><?= print_val( 'chest[activities]' ) ?></textarea>
                         </div>
                         <div class="form-group">
                             <label class="control-label">Have you experienced this discomfort at rest?</label>
@@ -511,7 +510,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                         <div class="form-group">
                             <label class="control-label">What do you do to relieve this discomfort?</label>
                             <textarea class="form-control" name="chest[relieve]" rows="4"
-                                      placeholder="Detail here"> <?= print_val( 'relieve', 0, 'chest'  ) ?></textarea>
+                                      placeholder="Detail here"></textarea>
                         </div>
 
 
@@ -935,7 +934,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                         </div>
                         <div class="form-group">
                             <textarea class="form-control" name="kidney[kidneydieases]" rows="4"
-                                      placeholder="Detail here" > <?= print_val( 'kidneydieases', 0, 'kidney'  ) ?></textarea>
+                                      placeholder="Detail here"></textarea>
                         </div>
 
                         <div class="form-group">
@@ -1013,7 +1012,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                             </div>
                             <div class="form-group">
                                 <textarea class="form-control" name="kidney[kidneydetails]" rows="4"
-                                          placeholder="Detail here"><?= print_val( 'kidneydetails', 0, 'kidney'  ) ?> </textarea>
+                                          placeholder="Detail here"></textarea>
                             </div>
                         </div>
                     </div>
@@ -1194,7 +1193,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                         <div class="form-group">
                             <label class="control-label">If yes,what equipment do you use?</label>
                             <textarea class="form-control" name="smoker[use]" rows="4"
-                                      placeholder="Detail here"><?= print_val( 'use', 0, 'smoker'  ) ?></textarea>
+                                      placeholder="Detail here"></textarea>
                         </div>
                         <div class="form-group">
                             <label class="control-label">Do you modify your diet for:</label>
@@ -1256,7 +1255,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                             <label class="control-label">Please list all medication(s) you take, including
                                 dosage:</label>
                             <textarea class="form-control" name="sugar[list]" rows="4"
-                                      placeholder="detail here"><?= print_val( 'list', 0, 'sugar'  ) ?></textarea>
+                                      placeholder="detail here"></textarea>
                         </div>
                         <div class="form-group">
                             <label class="control-label">Where do you give your injection?</label>
@@ -1278,7 +1277,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                         <div class="form-group">
                             <label class="control-label">Types of exercise:</label>
                             <textarea class="form-control" name="sugar[type]" rows="2"
-                                      placeholder="detail here"><?= print_val( 'type', 0, 'sugar' ) ?></textarea>
+                                      placeholder="detail here"></textarea>
                         </div>
                         <div class="form-group">
                             <label class="control-label">Any complications of diabetes </label>
@@ -1398,7 +1397,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                             <label class="control-label">In what ways have you have adapted to having diabetes</label>
 
                             <textarea class="form-control" name="sugar[type]" rows="2"
-                                      placeholder="detail here"> <?= print_val( 'type', 0, 'sugar'  ) ?></textarea>
+                                      placeholder="detail here"></textarea>
                         </div>
                         <div class="form-group">
                             <label class="control-label">Regarding diabetes, have you recently felt?</label>
@@ -1437,7 +1436,7 @@ function isChecked( $key, $value, $detailed = false, $index = 0 )
                                 name,address,phone)</label>
 
                             <textarea class="form-control" name="sugar[doctordetails]" rows="4"
-                                      placeholder="Detail here"><?= print_val( 'doctordetails', 0, 'sugar'  ) ?></textarea>
+                                      placeholder="Detail here"></textarea>
                         </div>
                     </div>
 

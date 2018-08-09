@@ -32,7 +32,7 @@ if(isset($_POST['email']) && isset($_POST['password'])) {
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>HI BOT</title>
+    <title>ED SYSTEM</title>
   </head>
   <body>
     <section class="material-half-bg">
@@ -40,7 +40,7 @@ if(isset($_POST['email']) && isset($_POST['password'])) {
     </section>
     <section class="login-content">
       <div class="logo">
-        <h1>Health Intelligent Bot</h1>
+        <h1>ED SYSTEM</h1>
       </div>
 
         <div class="login-box">
@@ -49,11 +49,11 @@ if(isset($_POST['email']) && isset($_POST['password'])) {
             <?php if($error) { ?><div class="alert alert-danger"><?php echo $error; ?></div><?php } ?>
             <div class="form-group">
               <label class="control-label">USERNAME</label>
-              <input name="email" class="form-control" type="text" placeholder="Email" autofocus>
+              <input name="email" class="form-control" type="text" placeholder="Email" autofocus required>
             </div>
             <div class="form-group">
               <label class="control-label">PASSWORD</label>
-              <input name="password" class="form-control" type="password" placeholder="Password">
+              <input name="password" class="form-control" type="password" placeholder="Password" required>
             </div>
             <div class="form-group">
               <div class="utility">
@@ -67,6 +67,7 @@ if(isset($_POST['email']) && isset($_POST['password'])) {
             </div>
             <div class="form-group btn-container">
               <button class="btn btn-primary btn-block"><i class="fa fa-sign-in fa-lg fa-fw"></i>SIGN IN</button>
+                <p class="semibold-text mb-2"><a href="page-register.php" ><center>OR REGISTER</center></a></p>
             </div>
           </form>
           <form class="forget-form" action="index.php">

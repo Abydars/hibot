@@ -1,8 +1,8 @@
 <?php
-error_reporting( 0 );
+error_reporting( 0 ); //show error
 session_start();
 
-define( 'SITE_NAME', 'Hi Bot' );
+define( 'SITE_NAME', 'Hi Bot' ); //constant values
 define( 'EMAIL_FROM', 'kkirmani@gmail.com' );
 define( 'SMTP_HOST', 'smtp.gmail.com' );
 define( 'SMTP_PORT', 25 );

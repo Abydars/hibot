@@ -10,7 +10,7 @@ $user_id  = $_SESSION['user_id'];
 $user     = getUser( $user_id );
 $result   = $con->query( "SELECT * FROM weekly_form WHERE user_id = '{$user_id}'" );
 
-while ( $row = mysqli_fetch_assoc( $result ) ) {
+while ( $row = mysqli_fetch_assoc( $result ) ) { //for overall predictions
 	$result2 = $con->query( "SELECT s.* FROM user_symptoms AS us JOIN symptoms AS s ON us.symptom_id = s.id WHERE form_id = '{$row['id']}'" );
 
 	while ( $row2 = mysqli_fetch_assoc( $result2 ) ) {
@@ -89,65 +89,17 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>HI BOT</title>
+    <title>ED SYSTEM</title>
 </head>
 <body class="app sidebar-mini">
 <!-- Navbar-->
-<header class="app-header"><a class="app-header__logo" href="index.php">Hi Bot</a>
+<header class="app-header"><a class="app-header__logo" href="index.php">Ed System</a>
     <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"></a>
     <!-- Navbar Right Menu-->
     <ul class="app-nav">
-        <li class="app-search">
-            <input class="app-search__input" type="search" placeholder="Search">
-            <button class="app-search__button"><i class="fa fa-search"></i></button>
-        </li>
-        <!--Notification Menu-->
-        <!-- <li class="dropdown"><a class="app-nav__item" href="#" data-toggle="dropdown"><i class="fa fa-bell-o fa-lg"></i></a>
-          <ul class="app-notification dropdown-menu dropdown-menu-right">
-            <li class="app-notification__title">You have 4 new notifications.</li>
-            <div class="app-notification__content">
-              <li><a class="app-notification__item" href="javascript:;"><span class="app-notification__icon"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-envelope fa-stack-1x fa-inverse"></i></span></span>
-                  <div>
-                    <p class="app-notification__message">Lisa sent you a mail</p>
-                    <p class="app-notification__meta">2 min ago</p>
-                  </div></a></li>
-              <li><a class="app-notification__item" href="javascript:;"><span class="app-notification__icon"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x text-danger"></i><i class="fa fa-hdd-o fa-stack-1x fa-inverse"></i></span></span>
-                  <div>
-                    <p class="app-notification__message">Mail server not working</p>
-                    <p class="app-notification__meta">5 min ago</p>
-                  </div></a></li>
-              <li><a class="app-notification__item" href="javascript:;"><span class="app-notification__icon"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x text-success"></i><i class="fa fa-money fa-stack-1x fa-inverse"></i></span></span>
-                  <div>
-                    <p class="app-notification__message">Transaction complete</p>
-                    <p class="app-notification__meta">2 days ago</p>
-                  </div></a></li>
-              <div class="app-notification__content">
-                <li><a class="app-notification__item" href="javascript:;"><span class="app-notification__icon"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x text-primary"></i><i class="fa fa-envelope fa-stack-1x fa-inverse"></i></span></span>
-                    <div>
-                      <p class="app-notification__message">Lisa sent you a mail</p>
-                      <p class="app-notification__meta">2 min ago</p>
-                    </div></a></li>
-                <li><a class="app-notification__item" href="javascript:;"><span class="app-notification__icon"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x text-danger"></i><i class="fa fa-hdd-o fa-stack-1x fa-inverse"></i></span></span>
-                    <div>
-                      <p class="app-notification__message">Mail server not working</p>
-                      <p class="app-notification__meta">5 min ago</p>
-                    </div></a></li>
-                <li><a class="app-notification__item" href="javascript:;"><span class="app-notification__icon"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x text-success"></i><i class="fa fa-money fa-stack-1x fa-inverse"></i></span></span>
-                    <div>
-                      <p class="app-notification__message">Transaction complete</p>
-                      <p class="app-notification__meta">2 days ago</p>
-                    </div></a></li>
-              </div>
-            </div>
-            <li class="app-notification__footer"><a href="#">See all notifications.</a></li>
-          </ul>
-        </li> -->
-        <!-- User Menu-->
         <li class="dropdown"><a class="app-nav__item" href="#" data-toggle="dropdown"><i
                         class="fa fa-user fa-lg"></i></a>
             <ul class="dropdown-menu settings-menu dropdown-menu-right">
-                <li><a class="dropdown-item" href="page-user.html"><i class="fa fa-cog fa-lg"></i> Settings</a></li>
-                <li><a class="dropdown-item" href="page-user.html"><i class="fa fa-user fa-lg"></i> Profile</a></li>
                 <li><a class="dropdown-item" href="logout.php"><i class="fa fa-sign-out fa-lg"></i> Logout</a></li>
             </ul>
         </li>
@@ -193,8 +145,14 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
 
             </ul>
         </li>
-        <li><a class="app-menu__item" href="charts.html"><i class="app-menu__icon fa fa-pie-chart"></i><span
+        <li><a class="app-menu__item" href="charts.php"><i class="app-menu__icon fa fa-pie-chart"></i><span
                         class="app-menu__label">Charts</span></a></li>
+		<?php if($user['role'] == 'admin') { ?>
+        <li><a class="app-menu__item" href="users.php"><i class="app-menu__icon fa fa-users"></i><span
+                        class="app-menu__label">Users</span></a></li>
+		<li><a class="app-menu__item" href="diseases.php"><i class="app-menu__icon fa fa-users"></i><span
+                        class="app-menu__label">Diseases</span></a></li>
+		<?php } ?>
 
 
     </ul>
@@ -210,40 +168,7 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
 		<li class="breadcrumb-item"><a href="#">Dashboard</a></li>
 	  </ul>
 	</div> -->
-    <div class="row">
-        <div class="col-md-6 col-lg-3">
-            <div class="widget-small primary coloured-icon"><i class="icon fa fa-users fa-3x"></i>
-                <div class="info">
-                    <h4>Users</h4>
-                    <p><b>5</b></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="widget-small info coloured-icon"><i class="icon fa fa-thumbs-o-up fa-3x"></i>
-                <div class="info">
-                    <h4>Likes</h4>
-                    <p><b>25</b></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="widget-small warning coloured-icon"><i class="icon fa fa-files-o fa-3x"></i>
-                <div class="info">
-                    <h4>Uploades</h4>
-                    <p><b>10</b></p>
-                </div>
-            </div>
-        </div>
-        <!-- <div class="col-md-6 col-lg-3">
-          <div class="widget-small danger coloured-icon"><i class="icon fa fa-star fa-3x"></i>
-            <div class="info">
-              <h4>Stars</h4>
-              <p><b>500</b></p>
-            </div>
-          </div>
-        </div> -->
-    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="tile">
@@ -265,7 +190,7 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
             <div class="tile">
                 <h3 class="tile-title">Overall Predictions</h3>
                 <div class="embed-responsive embed-responsive-16by9">
-                    <canvas class="embed-responsive-item" id="prediction-bar-chart"></canvas>
+                   <canvas class="embed-responsive-item" id="prediction-bar-chart"></canvas>
                 </div>
             </div>
         </div>
@@ -296,35 +221,7 @@ while ( $row = mysqli_fetch_assoc( $result ) ) {
             </div>
         </div>
     </div>
-    <!-- <div class="row">
-	  <div class="col-md-6">
-		<div class="tile">
-		  <h3 class="tile-title">Features</h3>
-		  <ul>
-			<li>Built with Bootstrap 4, SASS and PUG.js</li>
-			<li>Fully responsive and modular code</li>
-			<li>Seven pages including login, user profile and print friendly invoice page</li>
-			<li>Smart integration of forgot password on login page</li>
-			<li>Chart.js integration to display responsive charts</li>
-			<li>Widgets to effectively display statistics</li>
-			<li>Data tables with sort, search and paginate functionality</li>
-			<li>Custom form elements like toggle buttons, auto-complete, tags and date-picker</li>
-			<li>A inbuilt toast library for providing meaningful response messages to user's actions</li>
-		  </ul>
-		  <p>Vali is a free and responsive admin theme built with Bootstrap 4, SASS and PUG.js. It's fully customizable and modular.</p>
-		  <p>Vali is is light-weight, expendable and good looking theme. The theme has all the features required in a dashboard theme but this features are built like plug and play module. Take a look at the <a href="http://pratikborsadiya.in/blog/vali-admin" target="_blank">documentation</a> about customizing the theme colors and functionality.</p>
-		  <p class="mt-4 mb-4"><a class="btn btn-primary mr-2 mb-2" href="http://pratikborsadiya.in/blog/vali-admin" target="_blank"><i class="fa fa-file"></i>Docs</a><a class="btn btn-info mr-2 mb-2" href="https://github.com/pratikborsadiya/vali-admin" target="_blank"><i class="fa fa-github"></i>GitHub</a><a class="btn btn-success mb-2" href="https://github.com/pratikborsadiya/vali-admin/archive/master.zip" target="_blank"><i class="fa fa-download"></i>Download</a></p>
-		</div>
-	  </div>
-	  <div class="col-md-6">
-		<div class="tile">
-		  <h3 class="tile-title">Compatibility with frameworks</h3>
-		  <p>This theme is not built for a specific framework or technology like Angular or React etc. But due to it's modular nature it's very easy to incorporate it into any front-end or back-end framework like Angular, React or Laravel.</p>
-		  <p>Go to <a href="http://pratikborsadiya.in/blog/vali-admin" target="_blank">documentation</a> for more details about integrating this theme with various frameworks.</p>
-		  <p>The source code is available on GitHub. If anything is missing or weird please report it as an issue on <a href="https://github.com/pratikborsadiya/vali-admin" target="_blank">GitHub</a>. If you want to contribute to this theme pull requests are always welcome.</p>
-		</div>
-	  </div>
-	</div> -->
+
 </main>
 <!-- Essential javascripts for application to work-->
 <script src="js/jquery-3.2.1.min.js"></script>
