@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 14, 2018 at 02:54 AM
+-- Generation Time: Aug 10, 2018 at 12:31 PM
 -- Server version: 10.1.21-MariaDB
 -- PHP Version: 7.1.1
 
@@ -61,7 +61,8 @@ INSERT INTO `diseases` (`id`, `label`) VALUES
 (23, 'Common Cold'),
 (24, 'Strep Throat'),
 (25, 'Viral Hypertenion'),
-(26, 'Lung Infection');
+(26, 'Lung Infection'),
+(29, 'ftftf');
 
 -- --------------------------------------------------------
 
@@ -96,8 +97,6 @@ INSERT INTO `disease_symptoms` (`id`, `disease_id`, `symptom_id`) VALUES
 (14, 8, 3),
 (15, 9, 3),
 (16, 10, 3),
-(17, 1, 1),
-(18, 1, 2),
 (19, 11, 3),
 (20, 12, 3),
 (21, 13, 3),
@@ -116,20 +115,16 @@ INSERT INTO `disease_symptoms` (`id`, `disease_id`, `symptom_id`) VALUES
 (35, 13, 6),
 (36, 17, 6),
 (37, 18, 6),
-(38, 1, 6),
 (39, 17, 7),
 (40, 18, 7),
-(41, 1, 7),
 (42, 19, 7),
 (43, 15, 8),
 (44, 5, 8),
 (45, 17, 8),
 (46, 3, 8),
 (47, 18, 9),
-(48, 1, 9),
 (49, 7, 9),
 (50, 18, 10),
-(51, 1, 10),
 (52, 7, 10),
 (53, 23, 11),
 (54, 3, 11),
@@ -148,8 +143,15 @@ INSERT INTO `disease_symptoms` (`id`, `disease_id`, `symptom_id`) VALUES
 (67, 23, 14),
 (68, 2, 14),
 (69, 10, 14),
-(70, 1, 14),
-(71, 14, 14);
+(71, 14, 14),
+(75, 1, 1),
+(76, 1, 2),
+(77, 1, 9),
+(83, 21, 2),
+(84, 21, 3),
+(85, 29, 2),
+(86, 29, 3),
+(87, 29, 4);
 
 -- --------------------------------------------------------
 
@@ -180,7 +182,8 @@ INSERT INTO `symptoms` (`id`, `name`) VALUES
 (11, 'Low Blood Pressure'),
 (12, 'High Blood Pressure'),
 (13, 'Fever'),
-(14, 'Cough Problem');
+(14, 'Cough Problem'),
+(15, 'Testing');
 
 -- --------------------------------------------------------
 
@@ -193,21 +196,26 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
-  `phone` varchar(255) DEFAULT NULL
+  `phone` varchar(255) DEFAULT NULL,
+  `role` varchar(100) NOT NULL DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `name`, `phone`) VALUES
-(1, 'admin', 'admin', 'Kazim', NULL),
-(2, 'admin1', 'admin1', NULL, NULL),
-(3, 'admin2', 'admin2', NULL, NULL),
-(4, 'kazim', '123', NULL, NULL),
-(5, 'mub', '123', NULL, NULL),
-(6, 'tester', 'tester', 'Test', '49280394'),
-(7, 'tester123', 'tester', 'tester', '429038');
+INSERT INTO `users` (`user_id`, `username`, `password`, `name`, `phone`, `role`) VALUES
+(1, 'admin', 'admin', 'Kazim', NULL, 'admin'),
+(2, 'admin1', 'admin1', NULL, NULL, 'user'),
+(3, 'admin2', 'admin2', NULL, NULL, 'user'),
+(4, 'kazim', '123', NULL, NULL, 'user'),
+(5, 'mub', '123', NULL, NULL, 'user'),
+(6, 'tester', 'tester', 'Test', '49280394', 'user'),
+(7, 'tester123', 'tester', 'tester', '429038', 'user'),
+(8, 'kk', 'admin', 'kirmani', '03322514962', 'user'),
+(9, 'kirmani', '123', 'kirmani', '03322514962', 'user'),
+(10, 'ali khan', '123', 'ali', '123456789', 'user'),
+(11, 'po', '1', 'po', '12', 'user');
 
 -- --------------------------------------------------------
 
@@ -229,7 +237,7 @@ CREATE TABLE `user_meta` (
 INSERT INTO `user_meta` (`id`, `meta_key`, `meta_value`, `user_id`) VALUES
 (1, 'reg-name', 'kazim', 1),
 (2, 'reg-dob', '08/09/10', 1),
-(3, 'reg-address', '                               adasdadasad``', 1),
+(3, 'reg-address', '                                   adasdadasad``', 1),
 (4, 'reg-city', 'sad', 1),
 (5, 'reg-country', 'dsa', 1),
 (6, 'reg-phone', '6115', 1),
@@ -240,7 +248,7 @@ INSERT INTO `user_meta` (`id`, `meta_key`, `meta_value`, `user_id`) VALUES
 (11, 'diseases', '[\"ASDAS\",\"123\",\"412312\",\"QQQQQQQ\"]', 1),
 (12, 'medicines', '[\"VRFV\",\"CDSR\",\"3EDC\"]', 1),
 (13, 'reg-medicinereason', 'DADAD3RE', 1),
-(14, 'chest', '{\"discomfort\":\"\",\"experience\":\"\",\"occur\":\"onceamonth\",\"activities\":\"\",\"relieve\":\"\"}', 1),
+(14, 'chest', '{\"discomfort\":\"test\",\"experience\":\"\",\"occur\":\"onceamonth\",\"activities\":\"\",\"relieve\":\"\"}', 1),
 (15, 'heart', '{\"notice\":\"\",\"bring1\":\"\",\"symtoms\":[\"chestpain\",\"sweaty\",\"discomfort\",\"bodypain\",\"lowenergy\",\"lowbp\"]}', 1),
 (16, 'kidney', '{\"kindeysymptomdiagnosed\":[\"bloodtest\",\"protein\"],\"kidneydieases\":\"\",\"symptoms\":[\"hospitalized\",\"stones\"],\"kidneydetails\":\"\"}', 1),
 (17, 'smoker', '{\"smoked\":\"\",\"started\":\"\",\"stopped\":\"\",\"length\":\"\",\"use\":\"\",\"modify\":[\"modify1\",\"modify2\",\"modify3\",\"modify5\"]}', 1),
@@ -267,7 +275,25 @@ INSERT INTO `user_meta` (`id`, `meta_key`, `meta_value`, `user_id`) VALUES
 (38, 'smoker', '{\"smoked\":\"\",\"started\":\"\",\"stopped\":\"\",\"length\":\"\",\"use\":\"\"}', 7),
 (39, 'sugar', '{\"diabetes\":\"\",\"list\":\"\",\"injection\":\"\",\"type\":\"\",\"complications\":\"\",\"goals\":\"\",\"doctordetails\":\"\"}', 7),
 (40, 'image', 'field.jpg', 7),
-(41, 'filename', 'uploads/field.jpg', 7);
+(41, 'filename', 'uploads/field.jpg', 7),
+(42, 'reg-name', 'ali khan', 10),
+(43, 'reg-dob', '', 10),
+(44, 'reg-address', '  ', 10),
+(45, 'reg-city', '', 10),
+(46, 'reg-country', '', 10),
+(47, 'reg-phone', '', 10),
+(48, 'reg-age', '', 10),
+(49, 'reg-bloodgroup', '', 10),
+(50, 'physicians', '[\"\",\"\",\"\"]', 10),
+(51, 'reg-injuryreason', '', 10),
+(52, 'diseases', '[\"\",\"\",\"\",\"\"]', 10),
+(53, 'medicines', '[\"\",\"\",\"\"]', 10),
+(54, 'reg-medicinereason', '', 10),
+(55, 'chest', '{\"discomfort\":\"\",\"experience\":\"\",\"activities\":\"\",\"relieve\":\"\"}', 10),
+(56, 'heart', '{\"notice\":\"\",\"bring1\":\"\"}', 10),
+(57, 'kidney', '{\"kidneydieases\":\"\",\"kidneydetails\":\"\"}', 10),
+(58, 'smoker', '{\"smoked\":\"\",\"started\":\"\",\"stopped\":\"\",\"length\":\"\",\"use\":\"\"}', 10),
+(59, 'sugar', '{\"diabetes\":\"\",\"list\":\"\",\"injection\":\"\",\"type\":\"\",\"complications\":\"\",\"goals\":\"\",\"doctordetails\":\"\"}', 10);
 
 -- --------------------------------------------------------
 
@@ -304,7 +330,49 @@ INSERT INTO `user_symptoms` (`id`, `form_id`, `symptom_id`) VALUES
 (21, 10, 2),
 (22, 11, 1),
 (23, 12, 2),
-(24, 12, 3);
+(24, 12, 3),
+(25, 13, 4),
+(26, 13, 10),
+(27, 13, 11),
+(28, 14, 2),
+(29, 14, 4),
+(30, 14, 7),
+(31, 14, 9),
+(32, 14, 10),
+(33, 15, 4),
+(34, 15, 5),
+(35, 15, 6),
+(36, 15, 7),
+(37, 15, 11),
+(38, 15, 12),
+(39, 15, 13),
+(40, 15, 14),
+(41, 16, 1),
+(42, 16, 4),
+(43, 16, 9),
+(44, 17, 7),
+(45, 17, 13),
+(46, 17, 14),
+(47, 18, 1),
+(48, 18, 9),
+(49, 18, 11),
+(50, 19, 1),
+(51, 19, 4),
+(52, 19, 11),
+(53, 20, 5),
+(54, 20, 7),
+(55, 20, 12),
+(56, 21, 5),
+(57, 21, 7),
+(58, 21, 12),
+(59, 22, 6),
+(60, 22, 7),
+(61, 22, 13),
+(62, 23, 1),
+(63, 23, 10),
+(64, 23, 14),
+(65, 24, 13),
+(66, 24, 14);
 
 -- --------------------------------------------------------
 
@@ -323,7 +391,8 @@ CREATE TABLE `user_uploads` (
 --
 
 INSERT INTO `user_uploads` (`id`, `filename`, `form_id`) VALUES
-(1, 'uploads/Fall-wallpaper.jpg', 11);
+(1, 'uploads/Fall-wallpaper.jpg', 11),
+(2, 'uploads/Application Form.jpg', 13);
 
 -- --------------------------------------------------------
 
@@ -354,7 +423,19 @@ INSERT INTO `weekly_form` (`id`, `feeling`, `is_weird_health`, `medicines`, `ima
 (9, 'Test', 1, ',,', '', 1, '2018-05-13'),
 (10, 'Test', 1, 'test,,', '', 1, '2018-05-13'),
 (11, 'test', 1, ',,', '', 1, '2018-05-13'),
-(12, 'test', 1, 'test,,', '', 7, '2018-05-13');
+(12, 'test', 1, 'test,,', '', 7, '2018-05-13'),
+(13, 'kazim kirmanikazim kirmanikazim kirmanikazim kirmanikazim kirmanikazim kirmanikazim kirmanikazim kirmani', 1, 'panadol,panadol,panadol', '', 1, '2018-05-14'),
+(14, '2e2e2e2e2e2e2e', 1, 'e2e,2e2,2e2', '', 1, '2018-05-14'),
+(15, 'KIRMANIKIRMANIKIRMANIKIRMANIKIRMANIKIRMANIKIRMANIKIRMANIKIRMANI', 1, 'asasdasd,asdasdasd,adadadada', '', 8, '2018-05-14'),
+(16, 'LeOLeOLeOLeOLeOLeOLeO', 1, '', '', 1, '2018-06-05'),
+(17, 'LeoLeoLeoLeoLeoLeoLeoLeoLeo', 1, '', '', 1, '2018-06-05'),
+(18, 'i was feeling low and i had a headache', 1, 'xyz,,', '', 10, '2018-06-19'),
+(19, 'adsdsdsdsdsddssssssssssssssssssss', 1, '', '', 1, '2018-06-21'),
+(20, 'i am feeling bad', 1, '', '', 1, '2018-06-21'),
+(21, 'i am feeling bad', 1, '', '', 1, '2018-06-21'),
+(22, 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1, '', '', 1, '2018-06-21'),
+(23, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 1, '', '', 11, '2018-06-23'),
+(24, 'test', 1, '', '', 11, '2018-06-25');
 
 --
 -- Indexes for dumped tables
@@ -422,42 +503,42 @@ ALTER TABLE `weekly_form`
 -- AUTO_INCREMENT for table `diseases`
 --
 ALTER TABLE `diseases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 --
 -- AUTO_INCREMENT for table `disease_symptoms`
 --
 ALTER TABLE `disease_symptoms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 --
 -- AUTO_INCREMENT for table `symptoms`
 --
 ALTER TABLE `symptoms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT for table `user_meta`
 --
 ALTER TABLE `user_meta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 --
 -- AUTO_INCREMENT for table `user_symptoms`
 --
 ALTER TABLE `user_symptoms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 --
 -- AUTO_INCREMENT for table `user_uploads`
 --
 ALTER TABLE `user_uploads`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `weekly_form`
 --
 ALTER TABLE `weekly_form`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 --
 -- Constraints for dumped tables
 --
