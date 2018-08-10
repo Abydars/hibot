@@ -120,6 +120,7 @@ function predict( $data )
 
 	$samples = getSamples( 'data' ); //samples = symptoms
 	$labels  = getSamples( 'label' ); // labels = disease
+	var_dump(count($samples), count($labels));
 
 	for($i = 0; $i < 6; $i ++) {
 		$samples = array_merge($samples, $samples);
