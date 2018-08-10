@@ -122,8 +122,8 @@ function predict( $data )
 	$labels  = getSamples( 'label' ); // labels = disease
 
 	for($i = 0; $i < 6; $i ++) {
-		//$samples = array_merge($samples, $samples);
-		//$labels = array_merge($labels, $labels);
+		$samples = array_merge($samples, $samples);
+		$labels = array_merge($labels, $labels);
 	}
 
 	/*
@@ -139,6 +139,9 @@ function predict( $data )
 		}
 	}
 	*/
+	
+	$samples = [[1, 3], [1, 4], [2, 4], [3, 1], [4, 1], [4, 2]];
+	$labels = ['a', 'a', 'a', 'b', 'b', 'b'];
 
 	$classifier->train( $samples, $labels );
 	$predictions = $classifier->predictProbability( array_map( function ( $d ) {
