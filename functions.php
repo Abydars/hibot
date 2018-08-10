@@ -1,10 +1,11 @@
 <?php
-require_once __DIR__ . '/composer/vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
 use Phpml\Classification\SVC;
 use Phpml\SupportVectorMachine\Kernel;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
 
 if ( isset( $_GET['check'] ) ) {
 	echo '<pre>';
