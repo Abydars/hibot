@@ -99,7 +99,7 @@ class SupportVectorMachine
         float $cost = 1.0,
         float $nu = 0.5,
         int $degree = 3,
-        ?float $gamma = null,
+        float $gamma = null,
         float $coef0 = 0.0,
         float $epsilon = 0.1,
         float $tolerance = 0.001,
